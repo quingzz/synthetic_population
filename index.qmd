@@ -1,0 +1,5 @@
+## TOC
+
+Intro to synthetic population and simple workflow with `simPop`
+
+Application to HCM data

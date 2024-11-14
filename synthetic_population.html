@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.475">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Synthetic Population with simPop</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="synthetic_population_files/libs/clipboard/clipboard.min.js"></script>
+<script src="synthetic_population_files/libs/quarto-html/quarto.js"></script>
+<script src="synthetic_population_files/libs/quarto-html/popper.min.js"></script>
+<script src="synthetic_population_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="synthetic_population_files/libs/quarto-html/anchor.min.js"></script>
+<link href="synthetic_population_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="synthetic_population_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="synthetic_population_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="synthetic_population_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="synthetic_population_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#why-synthetic-population" id="toc-why-synthetic-population" class="nav-link active" data-scroll-target="#why-synthetic-population">Why synthetic population?</a></li>
+  <li><a href="#types-of-data" id="toc-types-of-data" class="nav-link" data-scroll-target="#types-of-data">Types of data</a></li>
+  <li><a href="#methodology" id="toc-methodology" class="nav-link" data-scroll-target="#methodology">Methodology</a>
+  <ul class="collapse">
+  <li><a href="#synthetic-reconstruction-sr" id="toc-synthetic-reconstruction-sr" class="nav-link" data-scroll-target="#synthetic-reconstruction-sr">Synthetic Reconstruction (SR)</a></li>
+  <li><a href="#combinatorial-optimization-co" id="toc-combinatorial-optimization-co" class="nav-link" data-scroll-target="#combinatorial-optimization-co">Combinatorial Optimization (CO)</a></li>
+  <li><a href="#model-for-prediction" id="toc-model-for-prediction" class="nav-link" data-scroll-target="#model-for-prediction">Model for prediction</a></li>
+  <li><a href="#overall-process" id="toc-overall-process" class="nav-link" data-scroll-target="#overall-process">Overall process</a></li>
+  </ul></li>
+  <li><a href="#code-using-simpop" id="toc-code-using-simpop" class="nav-link" data-scroll-target="#code-using-simpop">Code using simPop</a>
+  <ul class="collapse">
+  <li><a href="#input-data" id="toc-input-data" class="nav-link" data-scroll-target="#input-data">Input data</a></li>
+  <li><a href="#calibrating-sample-weight" id="toc-calibrating-sample-weight" class="nav-link" data-scroll-target="#calibrating-sample-weight">Calibrating sample weight</a></li>
+  <li><a href="#generate-synthetic-population-data" id="toc-generate-synthetic-population-data" class="nav-link" data-scroll-target="#generate-synthetic-population-data">Generate synthetic population data</a></li>
+  <li><a href="#calibrate-the-synthetic-population" id="toc-calibrate-the-synthetic-population" class="nav-link" data-scroll-target="#calibrate-the-synthetic-population">Calibrate the synthetic population</a></li>
+  <li><a href="#validate-synthetic-population-with-built-in-tools" id="toc-validate-synthetic-population-with-built-in-tools" class="nav-link" data-scroll-target="#validate-synthetic-population-with-built-in-tools">Validate synthetic population with built-in tools</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Synthetic Population with simPop</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="why-synthetic-population" class="level2">
+<h2 class="anchored" data-anchor-id="why-synthetic-population">Why synthetic population?</h2>
+<p>Purpose</p>
+<ul>
+<li><p>Data privacy</p></li>
+<li><p>Scale up sample data to better fit the distribution of population</p></li>
+</ul>
+<p>Application</p>
+<ul>
+<li><p>input data for machine learning (which requires a lot of data)</p></li>
+<li><p>use as population for simulation problems</p></li>
+</ul>
+</section>
+<section id="types-of-data" class="level2">
+<h2 class="anchored" data-anchor-id="types-of-data">Types of data</h2>
+<p>Macro data:</p>
+<ul>
+<li>IPUMS data (at district level)</li>
+</ul>
+<p>Micro data:</p>
+<ul>
+<li>HCDC data</li>
+</ul>
+</section>
+<section id="methodology" class="level2">
+<h2 class="anchored" data-anchor-id="methodology">Methodology</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># so does synthetic reconstruction basically assigning non-integer weight to a synthetic microdata while combination optimization assigning integer weight to available micro data and both aim to have a population that match a macro data??</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="synthetic-reconstruction-sr" class="level3">
+<h3 class="anchored" data-anchor-id="synthetic-reconstruction-sr">Synthetic Reconstruction (SR)</h3>
+<p>Keyword: re-weight</p>
+</section>
+<section id="combinatorial-optimization-co" class="level3">
+<h3 class="anchored" data-anchor-id="combinatorial-optimization-co">Combinatorial Optimization (CO)</h3>
+<p>Keyword: re-sample</p>
+<p>Perhaps combine Synthetic Reconstruct (SR) technique to re-weight district level aggregated data and use that for CO?</p>
+<p>Algorithm for CO:</p>
+<ul>
+<li><p>Generative algo (less susceptible to local maxima)</p>
+<ul>
+<li>package GA, genSA</li>
+</ul></li>
+<li><p>Modified simulated annealing</p></li>
+</ul>
+<p>Package related to synthetic population:</p>
+<ul>
+<li>simPop</li>
+</ul>
+</section>
+<section id="model-for-prediction" class="level3">
+<h3 class="anchored" data-anchor-id="model-for-prediction">Model for prediction</h3>
+</section>
+<section id="overall-process" class="level3">
+<h3 class="anchored" data-anchor-id="overall-process">Overall process</h3>
+</section>
+</section>
+<section id="code-using-simpop" class="level2">
+<h2 class="anchored" data-anchor-id="code-using-simpop">Code using simPop</h2>
+<p>Mostly follows SR and model</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(simPop)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'simPop' was built under R version 4.3.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: lattice</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: vcd</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'vcd' was built under R version 4.3.3</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: grid</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Package simPop 2.1.3 has been loaded!</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Since simPop does explicit parallelization,
+ the number of data.table threads is set to 1.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'ggplot2' was built under R version 4.3.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'dplyr' was built under R version 4.3.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'stringr' was built under R version 4.3.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+</div>
+<section id="input-data" class="level3">
+<h3 class="anchored" data-anchor-id="input-data">Input data</h3>
+<p>Use survey data (micro data) as input</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># use built-in survey data for demonstration purpose</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"eusilcS"</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># rename some important variables for readability</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>eusilcS <span class="ot">&lt;-</span> eusilcS <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="at">hhid =</span> db030, <span class="at">state =</span> db040, <span class="at">gender =</span> rb090, <span class="at">economic_status =</span> pl030, <span class="at">weight =</span> rb050, <span class="at">citizenship =</span> pb220a)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(eusilcS) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     hhid hsize         state age gender economic_status citizenship netIncome
+9292    1     2      Salzburg  72   male               5          AT  22675.48
+9293    1     2      Salzburg  66 female               5          AT  16999.29
+7227    2     1 Upper Austria  56 female               2          AT  19274.21
+5275    3     1        Styria  67 female               5          AT  13319.13
+7866    4     3 Upper Austria  70 female               5          AT  14365.57
+7867    4     3 Upper Austria  46   male               3          AT      0.00
+       py010n py050n py090n   py100n py110n py120n   py130n py140n    db090
+9292     0.00      0      0 22675.48      0      0     0.00      0 7.822929
+9293     0.00      0      0     0.00      0      0 16999.29      0 7.822929
+7227 19274.21      0      0     0.00      0      0     0.00      0 8.788089
+5275     0.00      0      0 13319.13      0      0     0.00      0 8.108452
+7866     0.00      0      0 14365.57      0      0     0.00      0 7.509383
+7867     0.00      0      0     0.00      0      0     0.00      0 7.509383
+       weight
+9292 7.822929
+9293 7.822929
+7227 8.788089
+5275 8.108452
+7866 7.509383
+7867 7.509383</code></pre>
+</div>
+</div>
+<p>Create <code>dataObj</code> using <code>specifyInput</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>inputData <span class="ot">&lt;-</span> <span class="fu">specifyInput</span>(</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  eusilcS,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">hhid =</span> <span class="st">"hhid"</span>, <span class="co"># specify variable for household id</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">hhsize =</span> <span class="st">"hsize"</span>, <span class="co"># specify household size</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">strata =</span> <span class="st">"state"</span>, <span class="co"># variable on stata (regions, etc.)</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">weight =</span> <span class="st">"weight"</span> <span class="co"># variable for sample weight (note that the sample weight is reduced by a factor of 100)</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>inputData</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ -------------- 
+survey sample of size 11725 x 19 
+
+ Selected important variables: 
+
+ household ID: hhid
+ personal ID: pid
+ variable household size: hsize
+ sampling weight: weight
+ strata: state
+ -------------- </code></pre>
+</div>
+</div>
+</section>
+<section id="calibrating-sample-weight" class="level3">
+<h3 class="anchored" data-anchor-id="calibrating-sample-weight">Calibrating sample weight</h3>
+<p>Calibrating sample weight by population totals (if the total population aka. macro data is available)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"totalsRG"</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>totalsRG <span class="sc">%&gt;%</span> </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(db040, rb090)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    rb090         db040   Freq
+1  female    Burgenland 146980
+2    male    Burgenland 140436
+3  female     Carinthia 285797
+4    male     Carinthia 270084
+5  female Lower Austria 828087
+6    male Lower Austria 797398
+7  female      Salzburg 722883
+8    male      Salzburg 702539
+9  female        Styria 274675
+10   male        Styria 259595
+11 female         Tyrol 619404
+12   male         Tyrol 595842
+13 female Upper Austria 368128
+14   male Upper Austria 353910
+15 female        Vienna 916150
+16   male        Vienna 850596
+17 female    Vorarlberg 190343
+18   male    Vorarlberg 184939</code></pre>
+</div>
+</div>
+<p>Compared to input data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>eusilcS <span class="sc">%&gt;%</span> </span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(gender, state) <span class="sc">%&gt;%</span> </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">freq =</span> <span class="fu">n</span>()</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(state, gender)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'gender'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 18 × 3
+# Groups:   gender [2]
+   gender state          freq
+   &lt;fct&gt;  &lt;fct&gt;         &lt;int&gt;
+ 1 male   Burgenland      200
+ 2 female Burgenland      233
+ 3 male   Carinthia       461
+ 4 female Carinthia       466
+ 5 male   Lower Austria  1050
+ 6 female Lower Austria  1030
+ 7 male   Salzburg        393
+ 8 female Salzburg        386
+ 9 male   Styria          907
+10 female Styria          952
+11 male   Tyrol           550
+12 female Tyrol           569
+13 male   Upper Austria  1052
+14 female Upper Austria  1068
+15 male   Vienna          844
+16 female Vienna          945
+17 male   Vorarlberg      307
+18 female Vorarlberg      312</code></pre>
+</div>
+</div>
+<p>Since the <code>weight</code> is reduced by a factor of 100, total population must also be scaled down by 100 before calibrating</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>totalsRG <span class="ot">&lt;-</span> totalsRG <span class="sc">%&gt;%</span> </span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Freq =</span> Freq<span class="sc">/</span><span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>( <span class="co"># rename to match colnames in inputData</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">gender =</span> rb090, <span class="at">state =</span> db040</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="co"># then calibrate the input data</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>calibratedWeights <span class="ot">&lt;-</span> <span class="fu">calibSample</span>(inputData, totalsRG)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="co"># calibrated weights can then be added to input data</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a><span class="fu">addWeights</span>(inputData) <span class="ot">&lt;-</span> calibratedWeights</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="generate-synthetic-population-data" class="level3">
+<h3 class="anchored" data-anchor-id="generate-synthetic-population-data">Generate synthetic population data</h3>
+<section id="generate-household-structure" class="level4">
+<h4 class="anchored" data-anchor-id="generate-household-structure">Generate household structure</h4>
+<p>Built by resampling households from micro data (basically using CO with constraints being basic variables from macro data)</p>
+<p><strong><em>Why</em>?</strong> Prevent creation of unrealistic household</p>
+<p>Sampling technique: <em>Alias sampling</em></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>syntheticPopulation <span class="ot">&lt;-</span> <span class="fu">simStructure</span>(</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> inputData, </span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"direct"</span>,</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">basicHHvars =</span> <span class="fu">c</span>(<span class="st">"age"</span>, <span class="st">"gender"</span>, <span class="st">"state"</span>)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>syntheticPopulation</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+-------------- 
+synthetic population  of size 
+ 85057 x 7 
+
+build from a sample of size 
+11725 x 19
+-------------- 
+
+variables in the population:
+hhid,hsize,age,gender,state,pid,weight</code></pre>
+</div>
+</div>
+</section>
+<section id="generate-categorical-variables" class="level4">
+<h4 class="anchored" data-anchor-id="generate-categorical-variables">Generate categorical variables</h4>
+<p><strong><em>Approaches</em></strong></p>
+<ul>
+<li><p>model-based simulation</p>
+<ul>
+<li><p>multinomial logistic regression <code>method = "multinom"</code></p></li>
+<li><p>decision tree (classification trees or random forest) <code>method = "ctree"</code> or <code>method = "cforest"</code></p></li>
+</ul></li>
+<li><p>synthetic reconstruction <code>method = "distribution"</code> (when macro data is available)</p></li>
+</ul>
+<p><strong><em>Code</em></strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>syntheticPopulation <span class="ot">&lt;-</span> <span class="fu">simCategorical</span>(</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  syntheticPopulation,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">"multinom"</span>, <span class="co"># specify approach</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># to find number of cores available, call parallel::detectCores()</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">nr_cpus =</span> <span class="dv">8</span>, <span class="co"># specify number of cpus for parallel computing</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">additional =</span> <span class="fu">c</span>(<span class="st">"economic_status"</span>, <span class="st">"citizenship"</span>)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>syntheticPopulation</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+-------------- 
+synthetic population  of size 
+ 85057 x 9 
+
+build from a sample of size 
+11725 x 19
+-------------- 
+
+variables in the population:
+hhid,hsize,age,gender,state,pid,weight,economic_status,citizenship</code></pre>
+</div>
+</div>
+<p><strong><em>Demonstrating concept of synthetic reconstruction</em></strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span><span class="co">: demonstrating concept of synthetic reconstruction</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co"># synRec &lt;- simCategorical()</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="generate-continuous-variables" class="level4">
+<h4 class="anchored" data-anchor-id="generate-continuous-variables">Generate continuous variables</h4>
+<p><strong><em>Approaches</em></strong></p>
+<ul>
+<li><p>Multinomial logistic regression + Random drawing <code>method = "multinom"</code>: follow these steps</p>
+<ul>
+<li><p>Categorize the continuous variable</p></li>
+<li><p>Use regression model to get a category</p></li>
+<li><p>Value from the largest category is drawn from a generalized Pareto distribution</p></li>
+</ul></li>
+<li><p>Logistic regression + Linear regression <code>method = "lm"</code> (necessary for semi-continuous distribution): follow these steps</p>
+<ul>
+<li><p>Apply logistic regression model</p></li>
+<li><p>Perform linear regression</p></li>
+</ul></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>syntheticPopulation <span class="ot">&lt;-</span> <span class="fu">simContinuous</span>(</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  syntheticPopulation,</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">additional =</span> <span class="fu">c</span>(<span class="st">"netIncome"</span>), <span class="co"># specify continuous variable to simulate</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">upper =</span> <span class="dv">200000</span>, <span class="co"># set upper limit</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">zeros =</span> <span class="cn">TRUE</span>, <span class="co"># specify whether simulated vars are semi-continuous (contains many 0 values)</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">imputeMissing =</span> <span class="cn">FALSE</span> <span class="co"># whether to impute missing values using hock-deck</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>syntheticPopulation</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+-------------- 
+synthetic population  of size 
+ 85057 x 11 
+
+build from a sample of size 
+11725 x 19
+-------------- 
+
+variables in the population:
+hhid,hsize,age,gender,state,pid,weight,economic_status,citizenship,netIncomeCat,netIncome</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># view categories </span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(<span class="fu">pop</span>(syntheticPopulation, <span class="at">var=</span><span class="fu">c</span>(<span class="st">"netIncomeCat"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] (1.79e+04,2.06e+04]   (0,5.05e+03]          (8.4e+03,1.11e+04]   
+ [4] 0                     (1.11e+04,1.38e+04]   (5.05e+03,8.4e+03]   
+ [7] (2.35e+04,2.89e+04]   (1.59e+04,1.79e+04]   (2.89e+04,2e+05]     
+[10] (1.38e+04,1.59e+04]   (2.06e+04,2.35e+04]   [-4.37e+03,-3.11e+03)
+[13] [-5.81e+03,-4.37e+03) [-3.11e+03,0)        
+14 Levels: [-5.81e+03,-4.37e+03) [-4.37e+03,-3.11e+03) [-3.11e+03,0) ... (2.89e+04,2e+05]</code></pre>
+</div>
+</div>
+<p>Can also manually adjust values of the variables by accessing through <code>pop()</code>. The returned data is a <code>data.table</code></p>
+<p><strong><em>Example:</em></strong> set net income for individuals at age &lt;16 to <code>NA</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># enforce constraints</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>incomeConstraints <span class="ot">&lt;-</span> <span class="fu">pop</span>(syntheticPopulation, <span class="at">var =</span> <span class="fu">c</span>(<span class="st">"age"</span>, <span class="st">"netIncome"</span>))</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>incomeConstraints<span class="sc">$</span>age <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(incomeConstraints<span class="sc">$</span>age)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>incomeConstraints[age <span class="sc">&lt;</span> <span class="dv">16</span>, netIncome <span class="sc">:</span><span class="er">=</span> <span class="cn">NA</span>]</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="co"># override values for netIncome variable in synthetic population</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="fu">pop</span>(syntheticPopulation, <span class="at">var =</span> <span class="fu">c</span>(<span class="st">"netIncome"</span>)) <span class="ot">&lt;-</span> incomeConstraints<span class="sc">$</span>netIncome</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="simulation-of-components" class="level4">
+<h4 class="anchored" data-anchor-id="simulation-of-components">Simulation of components</h4>
+<p>Some variables in surveys are not collected directly but derived from other related variables. (e.g.&nbsp;net income computed from multiple income sources)</p>
+<p>Those related variables (referred to as components variables) can be generated by breaking down the synthetically generated continuous variable. This is done by re-sampling fractions from available survey data.</p>
+<p><code>simPop</code> have function&nbsp;<code>simComponents()</code> to accomplish that.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Categorize netIncome for use as a conditioning variable ------ </span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>sIncome <span class="ot">&lt;-</span> <span class="fu">manageSimPopObj</span>(syntheticPopulation, <span class="at">var =</span> <span class="st">"netIncome"</span>, <span class="at">sample=</span><span class="cn">TRUE</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">NOTE</span><span class="co">: it is equivalent to samp(syntheticPopulation, var = "netIncome") but samp() allows get-set multiple variables</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a><span class="co"># using manageSimPopObj as getter/setter is usually safer </span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>sWeight <span class="ot">&lt;-</span> <span class="fu">manageSimPopObj</span>(syntheticPopulation, <span class="at">var =</span> <span class="st">"weight"</span>, <span class="at">sample=</span><span class="cn">TRUE</span>)</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>pIncome <span class="ot">&lt;-</span> <span class="fu">manageSimPopObj</span>(syntheticPopulation, <span class="at">var =</span> <span class="st">"netIncome"</span>) <span class="co"># netIncome for synthetic population</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="co"># create breaks for categorizing</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>breaks <span class="ot">&lt;-</span> <span class="fu">getBreaks</span>(</span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> sIncome, <span class="co"># specify semi continuous variables</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">w =</span> sWeight, <span class="co"># specify sample weight</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">upper =</span> <span class="cn">Inf</span>, <span class="co"># upper bound of the variable, set as Inf to make sure both sample and pop values are in bound</span></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">equidist =</span> <span class="cn">FALSE</span> <span class="co"># specify whether break points should be equal distance</span></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a><span class="co"># update categories for both population and and sample</span></span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>syntheticPopulation <span class="ot">&lt;-</span> <span class="fu">manageSimPopObj</span>(</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>  syntheticPopulation, </span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">set=</span><span class="cn">TRUE</span>, <span class="co"># specifying usinng setter</span></span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">var =</span> <span class="st">"netIncomeCat"</span>,</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">sample =</span> <span class="cn">TRUE</span>, <span class="co"># update sample first</span></span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">values =</span> <span class="fu">getCat</span>(<span class="at">x =</span> sIncome, breaks)<span class="co"># update categories with generated break points</span></span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>syntheticPopulation <span class="ot">&lt;-</span> <span class="fu">manageSimPopObj</span>(</span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>  syntheticPopulation, <span class="at">set=</span><span class="cn">TRUE</span>, <span class="at">var =</span> <span class="st">"netIncomeCat"</span>,</span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">sample =</span> <span class="cn">FALSE</span>, <span class="co"># update population here </span></span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">values =</span> <span class="fu">getCat</span>(<span class="at">x =</span> pIncome, breaks)</span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a><span class="co"># ----- Simulate  net income components ------ </span></span>
+<span id="cb36-31"><a href="#cb36-31" aria-hidden="true" tabindex="-1"></a>syntheticPopulation <span class="ot">&lt;-</span> <span class="fu">simComponents</span>(</span>
+<span id="cb36-32"><a href="#cb36-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">simPopObj =</span> syntheticPopulation, </span>
+<span id="cb36-33"><a href="#cb36-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">total =</span> <span class="st">"netIncome"</span>, <span class="co"># specify the variable for total</span></span>
+<span id="cb36-34"><a href="#cb36-34" aria-hidden="true" tabindex="-1"></a>  <span class="co"># specify the component variables</span></span>
+<span id="cb36-35"><a href="#cb36-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">components =</span> <span class="fu">c</span>(<span class="st">"py010n"</span>, <span class="st">"py050n"</span>, <span class="st">"py090n"</span>, <span class="st">"py100n"</span>, <span class="st">"py110n"</span>,   <span class="st">"py120n"</span>, <span class="st">"py130n"</span>, <span class="st">"py140n"</span>), </span>
+<span id="cb36-36"><a href="#cb36-36" aria-hidden="true" tabindex="-1"></a>  <span class="co"># specify conditions for computing fractions of each component</span></span>
+<span id="cb36-37"><a href="#cb36-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">conditional =</span> <span class="fu">c</span>(<span class="st">"netIncomeCat"</span>, <span class="st">"economic_status"</span>), </span>
+<span id="cb36-38"><a href="#cb36-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">replaceEmpty =</span> <span class="st">"sequential"</span>, </span>
+<span id="cb36-39"><a href="#cb36-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">1</span>)</span>
+<span id="cb36-40"><a href="#cb36-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-41"><a href="#cb36-41" aria-hidden="true" tabindex="-1"></a>syntheticPopulation</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+-------------- 
+synthetic population  of size 
+ 85057 x 19 
+
+build from a sample of size 
+11725 x 20
+-------------- 
+
+variables in the population:
+hhid,hsize,age,gender,state,pid,weight,economic_status,citizenship,netIncomeCat,netIncome,py010n,py050n,py090n,py100n,py110n,py120n,py130n,py140n</code></pre>
+</div>
+</div>
+</section>
+<section id="geographic-allocation-of-population" class="level4">
+<h4 class="anchored" data-anchor-id="geographic-allocation-of-population">Geographic allocation of population</h4>
+<p>Synthetic population can be assigned to smaller geographical unit if data for population at lower geographical unit is available. In <code>simPop</code> this is done using <code>simInitSpatial()</code></p>
+<p>Required inputs: one or 2 table(s) with 3 variables</p>
+<ul>
+<li><p>Boarder geographical area (area in input sample data)</p></li>
+<li><p>Smaller area (area to assign the synthetic population to)</p></li>
+<li><p>Population for smaller area (either for household or individual)</p></li>
+</ul>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Simulate census data with smaller geographical unit
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function for simulating data for smaller geographical unit for demonstration purpose</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>simulate_districts <span class="ot">&lt;-</span> <span class="cf">function</span>(inp){</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  hhid <span class="ot">&lt;-</span> <span class="st">"hhid"</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  region <span class="ot">&lt;-</span> <span class="st">"state"</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>  a <span class="ot">&lt;-</span> inp[<span class="sc">!</span><span class="fu">duplicated</span>(inp[, hhid]), <span class="fu">c</span>(hhid, region)]</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  spl <span class="ot">&lt;-</span> <span class="fu">split</span>(a, a[,region]) <span class="co"># get sample hhid-region pairs grouped by regions</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  regions <span class="ot">&lt;-</span> <span class="fu">unique</span>(inp[, region]) <span class="co"># get regions in input sample data</span></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># assign each household to a smaller area</span></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>  tmpres <span class="ot">&lt;-</span> <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(spl), <span class="cf">function</span>(x){</span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># simulate code for smaller area </span></span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>    codes <span class="ot">&lt;-</span> <span class="fu">paste</span>(x, <span class="dv">1</span><span class="sc">:</span><span class="fu">sample</span>(<span class="dv">10</span><span class="sc">:</span><span class="dv">90</span>, <span class="dv">1</span>), <span class="at">sep=</span><span class="st">""</span>)</span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>    spl[[x]]<span class="sc">$</span>district <span class="ot">&lt;-</span> <span class="fu">sample</span>(codes, <span class="fu">nrow</span>(spl[[x]]), <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>    spl[[x]]</span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>  })</span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a>  tmpres <span class="ot">&lt;-</span> <span class="fu">do.call</span>(<span class="st">"rbind"</span>, tmpres)</span>
+<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a>  tmpres <span class="ot">&lt;-</span> tmpres[, <span class="sc">-</span><span class="dv">2</span>]</span>
+<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="fu">merge</span>(inp, tmpres, <span class="at">by.x =</span> hhid, <span class="at">by.y =</span> hhid, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb38-21"><a href="#cb38-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">invisible</span>(out)</span>
+<span id="cb38-22"><a href="#cb38-22" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb38-23"><a href="#cb38-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-24"><a href="#cb38-24" aria-hidden="true" tabindex="-1"></a><span class="co"># create census data with district </span></span>
+<span id="cb38-25"><a href="#cb38-25" aria-hidden="true" tabindex="-1"></a>census <span class="ot">&lt;-</span> <span class="fu">simulate_districts</span>(eusilcS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+<p>Create input data for assigning synthetic population to smaller geographical unit</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create the contingency table for household per region</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>tabHH <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xtabs</span>(weight <span class="sc">~</span> state <span class="sc">+</span> district, <span class="at">data =</span> census[<span class="sc">!</span><span class="fu">duplicated</span>(census<span class="sc">$</span>hhid), ])</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a><span class="co"># create the contingency table for population per region</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>tabP <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xtabs</span>(weight <span class="sc">~</span> state <span class="sc">+</span> district, <span class="at">data =</span> census)</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong><em>Code for geographical allocation</em></strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>syntheticPopulation <span class="ot">&lt;-</span> <span class="fu">simInitSpatial</span>(</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  syntheticPopulation, </span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># either tspatialHH or tspatialP is required. Assigning values for both also works.</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">tspatialHH =</span> tabHH, <span class="co"># specify contingency table for household</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">tspatialP =</span> tabP, <span class="co"># specify contingency table for individual</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">additional =</span> <span class="st">"district"</span>, <span class="co"># specify variable for smaller area (must exist in tspatial table)</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">region =</span> <span class="st">"state"</span> <span class="co"># specify variable for larger area (must exist in tspatial table)</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>syntheticPopulation</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+-------------- 
+synthetic population  of size 
+ 85057 x 20 
+
+build from a sample of size 
+11725 x 20
+-------------- 
+
+variables in the population:
+hhid,hsize,age,gender,state,pid,weight,economic_status,citizenship,netIncomeCat,netIncome,py010n,py050n,py090n,py100n,py110n,py120n,py130n,py140n,district</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="calibrate-the-synthetic-population" class="level3">
+<h3 class="anchored" data-anchor-id="calibrate-the-synthetic-population">Calibrate the synthetic population</h3>
+<p><strong><em>Approach</em></strong></p>
+<p>Calibrate against a known distribution of the population using Combinatorial Optimization</p>
+<p><strong><em>Code for calibrating</em></strong></p>
+<p>obtain a “known distribution” from synthetic data for demonstration purpose</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create another synthetic data to obtain "known distribution"</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>census <span class="ot">&lt;-</span> <span class="fu">simStructure</span>(<span class="at">data =</span> inputData, <span class="at">method =</span> <span class="st">"direct"</span>, <span class="at">basicHHvars =</span> <span class="fu">c</span>(<span class="st">"age"</span>, <span class="st">"gender"</span>, <span class="st">"state"</span>))</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>census <span class="ot">&lt;-</span> <span class="fu">simCategorical</span>(census, <span class="at">additional =</span> <span class="fu">c</span>(<span class="st">"economic_status"</span>, <span class="st">"citizenship"</span>))</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a><span class="co"># create known distribution</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>census <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">pop</span>(census))</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>knownDistribution <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xtabs</span>(<span class="sc">~</span> state <span class="sc">+</span> gender <span class="sc">+</span> economic_status, <span class="at">data=</span>census)</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># add known distribution to synthetic population</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>syntheticPopulation <span class="ot">&lt;-</span> <span class="fu">addKnownMargins</span>(syntheticPopulation, knownDistribution)</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="co"># and calibrate using simulated annealing</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>adjustedPopulation <span class="ot">&lt;-</span> <span class="fu">calibPop</span>(</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  syntheticPopulation, </span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">split =</span> <span class="st">"state"</span>, <span class="co"># split by region</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">temp =</span> <span class="dv">1</span>, <span class="co"># starting temperature for simulated annealing</span></span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">epsP.factor =</span> <span class="fl">0.00005</span>, <span class="co"># adjust factor of acceptance error on individual level</span></span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxiter =</span> <span class="dv">200</span>, <span class="at">temp.cooldown =</span> <span class="fl">0.85</span>, <span class="at">factor.cooldown =</span> <span class="fl">0.85</span>,</span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">min.temp =</span> <span class="fl">0.001</span>, <span class="at">nr_cpus =</span> <span class="dv">8</span></span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="validate-synthetic-population-with-built-in-tools" class="level3">
+<h3 class="anchored" data-anchor-id="validate-synthetic-population-with-built-in-tools">Validate synthetic population with built-in tools</h3>
+<p><strong><em>Computational tools</em></strong></p>
+<p><code>spTable()</code> computes contingency table for survey data and simulated data</p>
+<p><strong><em>Visualization tools</em></strong></p>
+<p><code>spMosaic()</code> for mosaic plot</p>
+<p><code>spCdfplot()</code> for cumulative distribution plot</p>
+<p><code>spBwplot()</code> for boxplot</p>
+<div class="cell" data-warnings="false">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># plot cdf for netIncome conditioning on state</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">spCdfplot</span>(syntheticPopulation, <span class="at">x =</span> <span class="st">"netIncome"</span>, <span class="at">cond =</span> <span class="st">"state"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in spCdf(x, w, ...): number of finite values in 'x' is smaller than
+'n': no approximation
+Warning in spCdf(x, w, ...): number of finite values in 'x' is smaller than
+'n': no approximation
+Warning in spCdf(x, w, ...): number of finite values in 'x' is smaller than
+'n': no approximation
+Warning in spCdf(x, w, ...): number of finite values in 'x' is smaller than
+'n': no approximation
+Warning in spCdf(x, w, ...): number of finite values in 'x' is smaller than
+'n': no approximation
+Warning in spCdf(x, w, ...): number of finite values in 'x' is smaller than
+'n': no approximation</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="synthetic_population_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check age-gender distribution</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">spCdfplot</span>(syntheticPopulation, <span class="at">x =</span> <span class="st">"age"</span>, <span class="at">cond =</span> <span class="st">"gender"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="synthetic_population_files/figure-html/unnamed-chunk-20-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># compare generated household structure of original vs simulated data</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">spTable</span>(syntheticPopulation, <span class="at">select =</span> <span class="fu">c</span>(<span class="st">"gender"</span>, <span class="st">"state"</span>, <span class="st">"hsize"</span>))</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="fu">spMosaic</span>(tab, <span class="at">labeling =</span> <span class="fu">labeling_border</span>(<span class="at">abbreviate =</span> <span class="fu">c</span>(<span class="at">state =</span> <span class="cn">TRUE</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="synthetic_population_files/figure-html/unnamed-chunk-20-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check state-netIncome of original vs simulated data</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">spBwplot</span>(</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  syntheticPopulation, <span class="at">x =</span> <span class="st">"netIncome"</span>, <span class="at">cond =</span> <span class="st">"economic_status"</span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="synthetic_population_files/figure-html/unnamed-chunk-20-4.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
