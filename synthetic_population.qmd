@@ -1,6 +1,7 @@
 ---
 title: "Synthetic Population with simPop"
 toc: true
+bibliography: references.bib
 ---
 
 ## Why synthetic population?
@@ -17,53 +18,63 @@ Application
 
 -   use as population for micro-simulation problems
 
-## Types of data
+## Data for creating synthetic population
 
-Macro data:
+Micro-level data (i.e. data at an individual level)
 
--   IPUMS data (at district level)
+-   **Source**: from household surveys
 
-Micro data:
+-   Detailed data
 
--   HCDC data
+Macro-level data (i.e. contingency/frequency tables for describing distribution across attributes)
+
+-   **Source**: census tables, usually open-source for public use from national statistical institutes
+
+<!-- -->
+
+-   More representative of the whole population
 
 ## Methodology
 
-```{r}
-# so does synthetic reconstruction basically assigning non-integer weight to a synthetic microdata while combination optimization assigning integer weight to available micro data and both aim to have a population that match a macro data??
-```
-
 ### Synthetic Reconstruction (SR)
 
-Keyword: re-weight
+Idea: assigning partial weights to synthetic micro data to match the distribution seen from macro data (marginal proportion). So essentially trying to figure out the underlying joint distribution.
+
+Required input data:
+
+-   micro-dataset representative of the population of interest
+
+-   aggregated data for multiple data (multiple marginal distributions)
+
+Algorithm:
+
+-   Iterative proportional fitting (IPF)
+
+-   Model for predicting the weight
 
 ### Combinatorial Optimization (CO)
 
-Keyword: re-sample
+Idea: assigning integer weights to available micro data to match the distribution seen from macro data
 
-Perhaps combine Synthetic Reconstruct (SR) technique to re-weight district level aggregated data and use that for CO?
+Required input data:
 
-Algorithm for CO:
+Algorithm:
 
 -   Generative algo (less susceptible to local maxima)
 
-    -   package GA, genSA
-
 -   Modified simulated annealing
-
-Package related to synthetic population:
-
--   simPop
-
-### Model for prediction
 
 ### Overall process
 
+![](figs/synthetic_population_process.png)
+
 ## Code using simPop
 
-Mostly follows SR and model
+Paper for simPop [@Templ2017]
 
-```{r}
+Mostly follows SR and model methods
+
+```{r, warnings=TRUE, message=TRUE, output=TRUE}
 library(simPop)
 library(tidyverse)
 ```
