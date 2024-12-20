@@ -1,12 +1,21 @@
-```{r}
+---
+title: "Synthetic Population for Ho Chi Minh city"
+toc: true
+df-print: paged
+---
+
+```{r warning=FALSE, message=FALSE}
 library(tidyverse)
 library(simPop)
 library(psych)
 ```
 
 ## Input data
+IPUMS dataset for Vietnam in 2019 is used as the micro data to generate the synthetic population for Ho Chi Minh city.
 
 [IPUMS data dictionary](https://lamngthanh.github.io/popdta/pop_dictionary.html#household-economic-variables)
+
+A census dataset for Ho Chi Minh will also be used for calibrating sample weights in IPUMS dataset and for allocating the synthetic population to commune level (which is not available in the IPUMS dataset).
 
 ```{r}
 census_hcm <- readRDS("data/census2019_hcm.rds")
@@ -14,24 +23,14 @@ census_hcm <- readRDS("data/census2019_hcm.rds")
 micro_data <- read_csv("data/ipumsi_00013/GEO1_VN2019_79.csv")
 
 colnames(micro_data) <- tolower(colnames(micro_data))
-
-# head(census_hcm)
-# head(micro_data)
 ```
 
 ## Data preprocessing
 
-Preprocessing steps:
+::: {.panel-tabset}
+## District variable
 
--   Label district + make it a factor
-
--   Compute economic status
-
--   Create new variable for limitted age range (some combinations are missing in census data, IPUMS have samples from 0-108 years old while census only cover 1-81 years of age)
-
--   Label gender + make it a factor
-
-### District variable
+Convert from codes to districts name, turn it into factor
 
 ```{r}
 # ----- label qh
@@ -77,7 +76,9 @@ census_hcm <- census_hcm %>%
   )
 ```
 
-### Economic variables
+## Economic variables
+
+Create new variable `economic_status` using PCA
 
 ```{r}
 # old socioeco_indicators
@@ -116,6 +117,8 @@ micro_data <- micro_data %>%
 Try plotting the economic status distribution
 
 ```{r}
+#| code-fold: true
+
 total <- nrow(micro_data)
 micro_data %>% group_by(economic_status, qh) %>% 
   summarize(
@@ -128,7 +131,11 @@ micro_data %>% group_by(economic_status, qh) %>%
     facet_wrap(vars(qh))
 ```
 
-### Age group variable
+## Age group variable
+
+Create new variable for age range
+
+***Note:*** some age levels are missing in census data (IPUMS have samples from 0-108 years old while census only cover 1-81 years of age)
 
 ```{r}
 # create age_group variable for micro_data
@@ -166,7 +173,9 @@ census_hcm <- census_hcm %>%
   )
 ```
 
-### Gender variable
+## Gender variable
+
+Standardize labels for gender variable
 
 ```{r}
 micro_data <- micro_data %>% 
@@ -183,7 +192,7 @@ census_hcm <- census_hcm %>%
   )
 ```
 
-### Categorical variables 
+## IPUMS categorical variables 
 
 Make sure categorical variables to be simulated are defined as factor in sample data
 
@@ -217,6 +226,7 @@ micro_data <- micro_data %>%
                )
   )
 ```
+:::
 
 ## Calibrating input data 
 
@@ -227,12 +237,13 @@ input_data <- specifyInput(
   micro_data,
   hhid = "serial", # specify variable for household id
   hhsize = "vn2019a_pern", # specify household size
-  strata = "qh", # variable on stata (regions, etc.)
-  weight = "perwt" # variable for sample weight (note that the sample weight is reduced by a factor of 100)
+  strata = "qh", # variable on stata (district in this case)
+  weight = "perwt" # variable for sample weight
   )
 
 input_data
 ```
+
 
 ### Calibrate weights based on census data
 
@@ -279,7 +290,8 @@ Re-sampling typical variables from original IPUMS data to ensure realistic house
 synthetic_population <- simStructure(
   data = input_data, 
   method = "direct",
-  basicHHvars = c("vn2019a_age", "sex", "qh", "urban")
+  basicHHvars = c("vn2019a_age", "sex", "qh", "urban"),
+  seed=1
   )
 
 synthetic_population
@@ -299,6 +311,8 @@ Variables to be simulated
 
 -   employment status (`empstat`)
 
+-   number of children under 5 years old in household (`nchlt5`)
+
 ```{r}
 # ---- simulate relig variable -----
 synthetic_population <- simCategorical(
@@ -306,6 +320,7 @@ synthetic_population <- simCategorical(
   method = "distribution",
   additional = c("relig"),
   regModel = "basic",
+  seed = 1,
   verbose = TRUE
 )
 
@@ -315,6 +330,7 @@ synthetic_population <- simCategorical(
   method = "ctree",
   additional = c("edlev"),
   regModel = ~ vn2019a_age + urban,
+  seed = 1,
   verbose = TRUE
 )
 
@@ -324,6 +340,7 @@ synthetic_population <- simCategorical(
   method = "ctree",
   additional = c("empstat"),
   regModel = ~ vn2019a_age + edlev + urban,
+  seed = 1,
   verbose = TRUE
 )
 
@@ -333,14 +350,26 @@ synthetic_population <- simCategorical(
   method = "ctree",
   additional = c("economic_status"),
   regModel = ~ vn2019a_age + edlev + empstat,
+  seed = 1,
+  verbose = TRUE
+)
+
+# ---- simulate number of children in household -----
+synthetic_population <- simCategorical(
+  synthetic_population,
+  method = "ctree",
+  additional = c("nchlt5"),
+  regModel = ~ urban + edlev + economic_status + vn2019a_age,
+  seed = 1,
   verbose = TRUE
 )
 ```
 
 ```{=html}
-<summary>
-  <details> View simulated population </details>
+<details>
+  <summary> View simulated population </summary>
 ```
+
 ```{r}
 head(
   synthetic_population@pop@data
@@ -348,22 +377,12 @@ head(
 ```
 
 ```{=html}
-</summary>
+</details>
 ```
 ### Generate continuous variables
 
-Variables to be simulated
-
--   Number of children under 5 years old in household (`nchlt5`)
-
 ```{r}
-simCategorical(
-  synthetic_population,
-  method = "ctree",
-  additional = c("nchlt5"),
-  regModel = ~ urban + edlev + economic_status + vn2019a_age,
-  verbose = TRUE
-)
+# TODO: select continoous variables to simulate
 ```
 
 ### Geographical allocation
@@ -372,7 +391,7 @@ Allocate to commune level using census data
 
 Census data for geo allocation must contains 3 columns: broader region, smaller region and count
 
-```{r}
+```{r, warning=FALSE}
 spatial_census <- census_hcm %>% 
   group_by(district, commune) %>% 
   summarize(n = sum(n)) %>% ungroup() %>% 
@@ -391,25 +410,36 @@ synthetic_population <- simInitSpatial(
 ### View simulated population
 
 ```{r}
-head(spatial_pop@pop@data, n=20) 
+head(synthetic_population@pop@data, n=10) 
+
+synthetic_population
 ```
 
 ## Calibrating synthetic population 
 
 The more detailed the macro data is, the better the synthetic population can be
+```{r}
+# TODO: calibrate based on additional macro data
+```
+
 
 ## Validate the synthetic dataset 
 
-Compare age pyramid of ipums and synthetic data
+### Compare age pyramid of ipums, census and synthetic data
 
-```{r}
-#| fig-width: 8
-#| fig-height: 7
-#| out-width: "100%"
+```{r pyramid plot func, message=FALSE, warning=FALSE}
+#| code-fold: true
+#| code-summary: "Function for plotting age pyramid"
 
 ipums_age <- micro_data %>% 
   group_by(qh, sex, age_group) %>% 
   summarize(population = n()) %>% 
+  mutate(population = ifelse(sex == "female", -population, population) ) %>% 
+  ungroup() 
+
+census_age <- census_hcm %>% 
+  group_by(district, sex, age_group) %>% 
+  summarize(population = sum(n)) %>% 
   mutate(population = ifelse(sex == "female", -population, population) ) %>% 
   ungroup() 
 
@@ -448,15 +478,162 @@ age_pyramid <- function(data, pop_col = "population", agegrp_col = "age_group",
           breaks = pop_breaks,
           labels = abs(pop_breaks)
         ) +
-    theme(axis.text.x = element_text(size = 4.5),
-          axis.text.y = element_text(size = 4)) +
+    theme(axis.text.x = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
         facet_wrap(vars(!! sym(region_col) ))
 }
+```
 
-age_pyramid(ipums_age)
+::: {.panel-tabset}
+## Synthetic dataset
+```{r}
+#| fig-width: 8
+#| fig-height: 7
+#| out-width: "100%"
 age_pyramid(synpop_age)
 ```
 
-Compare distributions variables
+## IPUMS
+```{r}
+#| fig-width: 8
+#| fig-height: 7
+#| out-width: "100%"
+age_pyramid(ipums_age)
+```
 
-education level, urban - rural status, no. children in household, religion, economic
+## Census
+```{r}
+#| fig-width: 8
+#| fig-height: 7
+#| out-width: "100%"
+age_pyramid(census_age, region_col = "district")
+```
+
+:::
+
+
+### Compare distributions of variables
+
+```{r helper plot function}
+#| code-fold: true
+#| code-summary: "Function for plotting distribution"
+
+plot_var_dist <- function(
+    data, plot_col, pop_formula = "n()", region_col = "qh", 
+    col_label = NULL, data_label = "ipums"
+    ){
+  
+  # compute population to plot 
+  dist <- data %>% 
+    group_by(!!sym(region_col), !!sym(plot_col)) %>% 
+    summarize(population = eval(rlang::parse_expr(pop_formula)) ) %>% 
+    ungroup()
+  
+  # handle label for plotted column
+  if (is.null(col_label)){ col_label <- plot_col }
+
+  ggplot(dist) +
+    geom_col(
+          aes(
+            x = population, y  = as.factor(!! sym(plot_col))
+            ),
+          fill = "cornflowerblue"
+          ) +
+    theme(axis.text.x = element_text(size = 6),
+          axis.text.y = element_text(size = 5)) +
+    labs(
+      title = str_interp("Distribution of ${col_label} in ${data_label} dataset"),
+      y = col_label
+    ) +
+    facet_wrap(vars(!! sym(region_col) )) 
+}
+```
+
+::: {.panel-tabset}
+## Education level
+
+```{r, warning = FALSE, message=FALSE}
+plot_var_dist(synthetic_population@pop@data, 
+      plot_col = "edlev", col_label = "education level", data_label = "synthetic")
+plot_var_dist(micro_data, pop_formula = "sum(perwt)", 
+              plot_col = "edlev", col_label = "education level", data_label = "ipums")
+```
+
+## Urban rural status
+
+```{r, warning = FALSE, message=FALSE}
+plot_var_dist(synthetic_population@pop@data, plot_col = "urban",
+              col_label = "urban-rural status", data_label = "synthetic")
+plot_var_dist(micro_data, pop_formula = "sum(perwt)", plot_col = "urban",
+              col_label = "urban-rural status", data_label = "ipums")
+```
+
+## Number of children under 5 in house hold
+
+```{r warning=FALSE, message=FALSE}
+plot_var_dist(synthetic_population@pop@data, plot_col = "nchlt5",
+            col_label = "no. of children per household", data_label = "synthetic")
+plot_var_dist(micro_data, pop_formula = "sum(perwt)", plot_col = "nchlt5",
+            col_label = "no. of children per household", data_label = "ipums")
+```
+
+## Religion
+
+```{r warning=FALSE, message=FALSE}
+plot_var_dist(synthetic_population@pop@data, plot_col = "relig",
+            col_label = "religion", data_label = "synthetic")
+plot_var_dist(micro_data, pop_formula = "sum(perwt)", plot_col = "relig",
+            col_label = "religion", data_label = "ipums")
+```
+
+## Economic status
+
+```{r warning=FALSE, message=FALSE}
+plot_var_dist(synthetic_population@pop@data, plot_col = "economic_status",
+              col_label = "economic status", data_label = "synthetic")
+plot_var_dist(micro_data, pop_formula = "sum(perwt)", plot_col = "economic_status",
+              col_label = "economic status", data_label = "ipums")
+```
+:::
+
+
+### Compare joint distribution
+Compare joint distribution of several variables of interest between IPUMS data and synthetic population
+
+::: {.panel-tabset}
+
+## urban edlev empstat
+```{r}
+tab <- spTable(synthetic_population, select = c("urban", "edlev", "empstat"))
+
+spMosaic(tab, 
+          # disable label for economic_status and edlev 
+         labels = c(
+           empstat = FALSE,
+           edlev = FALSE
+         ),
+         # keep varname for economic_status and edlev 
+         varnames = c(
+           empstat = TRUE,
+           edlev = TRUE
+         )
+       )
+```
+
+## sex edlev economic_status
+```{r}
+tab <- spTable(synthetic_population, select = c("sex", "edlev","economic_status"))
+spMosaic(tab, 
+         # disable label for economic_status and edlev 
+         labels = c(
+           economic_status = FALSE,
+           edlev = FALSE
+         ),
+         # keep varname for economic_status and edlev 
+         varnames = c(
+           economic_status = TRUE,
+           edlev = TRUE
+         )
+         )
+```
+:::

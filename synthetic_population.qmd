@@ -29,9 +29,6 @@ Micro-level data (i.e. data at an individual level)
 Macro-level data (i.e. contingency/frequency tables for describing distribution across attributes)
 
 -   **Source**: census tables, usually open-source for public use from national statistical institutes
-
-<!-- -->
-
 -   More representative of the whole population
 
 ## Methodology
@@ -109,7 +106,9 @@ inputData
 
 ### Calibrating sample weight
 
-Calibrating sample weight by population totals (if the total population aka. macro data is available)
+Calibrating sample weight by population totals (if the total population aka. macro data is available).
+
+Calibrated weights are computed by generalized raking procedures.
 
 ```{r}
 data("totalsRG")

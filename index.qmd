@@ -1,5 +1,13 @@
+## Hello world
+
+This Github page focuses on the topic of generating a Synthetic Population, using `simPop` R package.
+
+It is meant for me, my future self, and anyone who is interested.
+
+***Disclaimer:*** Work in progress, may contain some mistakes, notes are expected to be updated as I learn more about the topic.
+
 ## TOC
 
-Intro to synthetic population and simple workflow with `simPop`
+[Intro to synthetic population and simple workflow with `simPop`](synthetic_population.html)
 
-Application to HCM data
+[Application on HCM data](synthetic_hcm.html)
