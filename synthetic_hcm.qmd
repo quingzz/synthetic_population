@@ -466,6 +466,8 @@ synpop_age <- synthetic_population@pop@data %>%
 age_pyramid <- function(data, pop_col = "population", agegrp_col = "age_group",
                         gender_col = "sex", region_col = "qh"){
   
+  # compute proportion instead 
+  data[[pop_col]] <- data[[pop_col]]/sum(data[[pop_col]])
   pop_breaks <- pretty(data[[pop_col]])
   
   ggplot(data) +
@@ -478,8 +480,9 @@ age_pyramid <- function(data, pop_col = "population", agegrp_col = "age_group",
           breaks = pop_breaks,
           labels = abs(pop_breaks)
         ) +
-    theme(axis.text.x = element_text(size = 6),
-          axis.text.y = element_text(size = 5)) +
+        labs(x = "proportion of population") +
+        theme(axis.text.x = element_text(size = 6),
+              axis.text.y = element_text(size = 5)) +
         facet_wrap(vars(!! sym(region_col) ))
 }
 ```
@@ -529,13 +532,15 @@ plot_var_dist <- function(
     summarize(population = eval(rlang::parse_expr(pop_formula)) ) %>% 
     ungroup()
   
+  dist$prop <- dist$population/sum(dist$population)
+  
   # handle label for plotted column
   if (is.null(col_label)){ col_label <- plot_col }
 
   ggplot(dist) +
     geom_col(
           aes(
-            x = population, y  = as.factor(!! sym(plot_col))
+            x = prop, y  = as.factor(!! sym(plot_col))
             ),
           fill = "cornflowerblue"
           ) +
@@ -543,6 +548,7 @@ plot_var_dist <- function(
           axis.text.y = element_text(size = 5)) +
     labs(
       title = str_interp("Distribution of ${col_label} in ${data_label} dataset"),
+      x = "proportion of population",
       y = col_label
     ) +
     facet_wrap(vars(!! sym(region_col) )) 
@@ -553,6 +559,10 @@ plot_var_dist <- function(
 ## Education level
 
 ```{r, warning = FALSE, message=FALSE}
+#| fig-width: 8
+#| fig-height: 6
+#| out-width: "100%"
+
 plot_var_dist(synthetic_population@pop@data, 
       plot_col = "edlev", col_label = "education level", data_label = "synthetic")
 plot_var_dist(micro_data, pop_formula = "sum(perwt)", 
@@ -562,6 +572,10 @@ plot_var_dist(micro_data, pop_formula = "sum(perwt)",
 ## Urban rural status
 
 ```{r, warning = FALSE, message=FALSE}
+#| fig-width: 8
+#| fig-height: 6
+#| out-width: "100%"
+
 plot_var_dist(synthetic_population@pop@data, plot_col = "urban",
               col_label = "urban-rural status", data_label = "synthetic")
 plot_var_dist(micro_data, pop_formula = "sum(perwt)", plot_col = "urban",
@@ -571,6 +585,10 @@ plot_var_dist(micro_data, pop_formula = "sum(perwt)", plot_col = "urban",
 ## Number of children under 5 in house hold
 
 ```{r warning=FALSE, message=FALSE}
+#| fig-width: 8
+#| fig-height: 6
+#| out-width: "100%"
+
 plot_var_dist(synthetic_population@pop@data, plot_col = "nchlt5",
             col_label = "no. of children per household", data_label = "synthetic")
 plot_var_dist(micro_data, pop_formula = "sum(perwt)", plot_col = "nchlt5",
@@ -580,6 +598,10 @@ plot_var_dist(micro_data, pop_formula = "sum(perwt)", plot_col = "nchlt5",
 ## Religion
 
 ```{r warning=FALSE, message=FALSE}
+#| fig-width: 8
+#| fig-height: 6
+#| out-width: "100%"
+
 plot_var_dist(synthetic_population@pop@data, plot_col = "relig",
             col_label = "religion", data_label = "synthetic")
 plot_var_dist(micro_data, pop_formula = "sum(perwt)", plot_col = "relig",
@@ -589,6 +611,10 @@ plot_var_dist(micro_data, pop_formula = "sum(perwt)", plot_col = "relig",
 ## Economic status
 
 ```{r warning=FALSE, message=FALSE}
+#| fig-width: 8
+#| fig-height: 6
+#| out-width: "100%"
+
 plot_var_dist(synthetic_population@pop@data, plot_col = "economic_status",
               col_label = "economic status", data_label = "synthetic")
 plot_var_dist(micro_data, pop_formula = "sum(perwt)", plot_col = "economic_status",

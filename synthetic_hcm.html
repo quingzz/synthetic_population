@@ -720,22 +720,25 @@ serial,vn2019a_pern,vn2019a_age,sex,qh,urban,pid,weight,relig,edlev,empstat,econ
 <span id="cb43-33"><a href="#cb43-33" aria-hidden="true" tabindex="-1"></a>age_pyramid <span class="ot">&lt;-</span> <span class="cf">function</span>(data, <span class="at">pop_col =</span> <span class="st">"population"</span>, <span class="at">agegrp_col =</span> <span class="st">"age_group"</span>,</span>
 <span id="cb43-34"><a href="#cb43-34" aria-hidden="true" tabindex="-1"></a>                        <span class="at">gender_col =</span> <span class="st">"sex"</span>, <span class="at">region_col =</span> <span class="st">"qh"</span>){</span>
 <span id="cb43-35"><a href="#cb43-35" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb43-36"><a href="#cb43-36" aria-hidden="true" tabindex="-1"></a>  pop_breaks <span class="ot">&lt;-</span> <span class="fu">pretty</span>(data[[pop_col]])</span>
-<span id="cb43-37"><a href="#cb43-37" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb43-38"><a href="#cb43-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(data) <span class="sc">+</span></span>
-<span id="cb43-39"><a href="#cb43-39" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_col</span>(</span>
-<span id="cb43-40"><a href="#cb43-40" aria-hidden="true" tabindex="-1"></a>        <span class="fu">aes</span>(</span>
-<span id="cb43-41"><a href="#cb43-41" aria-hidden="true" tabindex="-1"></a>          <span class="at">x =</span> <span class="sc">!!</span> <span class="fu">sym</span>(pop_col), <span class="at">fill =</span> <span class="sc">!!</span> <span class="fu">sym</span>(gender_col), <span class="at">y  =</span> <span class="sc">!!</span> <span class="fu">sym</span>(agegrp_col)</span>
-<span id="cb43-42"><a href="#cb43-42" aria-hidden="true" tabindex="-1"></a>          )</span>
-<span id="cb43-43"><a href="#cb43-43" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">+</span></span>
-<span id="cb43-44"><a href="#cb43-44" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_x_continuous</span>(</span>
-<span id="cb43-45"><a href="#cb43-45" aria-hidden="true" tabindex="-1"></a>          <span class="at">breaks =</span> pop_breaks,</span>
-<span id="cb43-46"><a href="#cb43-46" aria-hidden="true" tabindex="-1"></a>          <span class="at">labels =</span> <span class="fu">abs</span>(pop_breaks)</span>
-<span id="cb43-47"><a href="#cb43-47" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">+</span></span>
-<span id="cb43-48"><a href="#cb43-48" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>),</span>
-<span id="cb43-49"><a href="#cb43-49" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">5</span>)) <span class="sc">+</span></span>
-<span id="cb43-50"><a href="#cb43-50" aria-hidden="true" tabindex="-1"></a>        <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(<span class="sc">!!</span> <span class="fu">sym</span>(region_col) ))</span>
-<span id="cb43-51"><a href="#cb43-51" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb43-36"><a href="#cb43-36" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute proportion instead </span></span>
+<span id="cb43-37"><a href="#cb43-37" aria-hidden="true" tabindex="-1"></a>  data[[pop_col]] <span class="ot">&lt;-</span> data[[pop_col]]<span class="sc">/</span><span class="fu">sum</span>(data[[pop_col]])</span>
+<span id="cb43-38"><a href="#cb43-38" aria-hidden="true" tabindex="-1"></a>  pop_breaks <span class="ot">&lt;-</span> <span class="fu">pretty</span>(data[[pop_col]])</span>
+<span id="cb43-39"><a href="#cb43-39" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb43-40"><a href="#cb43-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(data) <span class="sc">+</span></span>
+<span id="cb43-41"><a href="#cb43-41" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_col</span>(</span>
+<span id="cb43-42"><a href="#cb43-42" aria-hidden="true" tabindex="-1"></a>        <span class="fu">aes</span>(</span>
+<span id="cb43-43"><a href="#cb43-43" aria-hidden="true" tabindex="-1"></a>          <span class="at">x =</span> <span class="sc">!!</span> <span class="fu">sym</span>(pop_col), <span class="at">fill =</span> <span class="sc">!!</span> <span class="fu">sym</span>(gender_col), <span class="at">y  =</span> <span class="sc">!!</span> <span class="fu">sym</span>(agegrp_col)</span>
+<span id="cb43-44"><a href="#cb43-44" aria-hidden="true" tabindex="-1"></a>          )</span>
+<span id="cb43-45"><a href="#cb43-45" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">+</span></span>
+<span id="cb43-46"><a href="#cb43-46" aria-hidden="true" tabindex="-1"></a>        <span class="fu">scale_x_continuous</span>(</span>
+<span id="cb43-47"><a href="#cb43-47" aria-hidden="true" tabindex="-1"></a>          <span class="at">breaks =</span> pop_breaks,</span>
+<span id="cb43-48"><a href="#cb43-48" aria-hidden="true" tabindex="-1"></a>          <span class="at">labels =</span> <span class="fu">abs</span>(pop_breaks)</span>
+<span id="cb43-49"><a href="#cb43-49" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">+</span></span>
+<span id="cb43-50"><a href="#cb43-50" aria-hidden="true" tabindex="-1"></a>        <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"proportion of population"</span>) <span class="sc">+</span></span>
+<span id="cb43-51"><a href="#cb43-51" aria-hidden="true" tabindex="-1"></a>        <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>),</span>
+<span id="cb43-52"><a href="#cb43-52" aria-hidden="true" tabindex="-1"></a>              <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb43-53"><a href="#cb43-53" aria-hidden="true" tabindex="-1"></a>        <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(<span class="sc">!!</span> <span class="fu">sym</span>(region_col) ))</span>
+<span id="cb43-54"><a href="#cb43-54" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="panel-tabset">
@@ -780,28 +783,31 @@ serial,vn2019a_pern,vn2019a_age,sex,qh,urban,pid,weight,relig,edlev,empstat,econ
 <span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># compute population to plot </span></span>
 <span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>  dist <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
-<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="sc">!!</span><span class="fu">sym</span>(region_col), <span class="sc">!!</span><span class="fu">sym</span>(plot_col)) <span class="sc">%&gt;%</span> </span>
-<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">population =</span> <span class="fu">eval</span>(rlang<span class="sc">::</span><span class="fu">parse_expr</span>(pop_formula)) ) <span class="sc">%&gt;%</span> </span>
-<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(<span class="sc">!!</span><span class="fu">sym</span>(region_col), <span class="sc">!!</span><span class="fu">sym</span>(plot_col)) <span class="sc">%&gt;%</span> </span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarize</span>(<span class="at">population =</span> <span class="fu">eval</span>(rlang<span class="sc">::</span><span class="fu">parse_expr</span>(pop_formula)) ) <span class="sc">%&gt;%</span> </span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>()</span>
 <span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># handle label for plotted column</span></span>
-<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(col_label)){ col_label <span class="ot">&lt;-</span> plot_col }</span>
-<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(dist) <span class="sc">+</span></span>
-<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_col</span>(</span>
-<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a>          <span class="fu">aes</span>(</span>
-<span id="cb47-18"><a href="#cb47-18" aria-hidden="true" tabindex="-1"></a>            <span class="at">x =</span> population, <span class="at">y  =</span> <span class="fu">as.factor</span>(<span class="sc">!!</span> <span class="fu">sym</span>(plot_col))</span>
-<span id="cb47-19"><a href="#cb47-19" aria-hidden="true" tabindex="-1"></a>            ),</span>
-<span id="cb47-20"><a href="#cb47-20" aria-hidden="true" tabindex="-1"></a>          <span class="at">fill =</span> <span class="st">"cornflowerblue"</span></span>
-<span id="cb47-21"><a href="#cb47-21" aria-hidden="true" tabindex="-1"></a>          ) <span class="sc">+</span></span>
-<span id="cb47-22"><a href="#cb47-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>),</span>
-<span id="cb47-23"><a href="#cb47-23" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">5</span>)) <span class="sc">+</span></span>
-<span id="cb47-24"><a href="#cb47-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
-<span id="cb47-25"><a href="#cb47-25" aria-hidden="true" tabindex="-1"></a>      <span class="at">title =</span> <span class="fu">str_interp</span>(<span class="st">"Distribution of ${col_label} in ${data_label} dataset"</span>),</span>
-<span id="cb47-26"><a href="#cb47-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> col_label</span>
-<span id="cb47-27"><a href="#cb47-27" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
-<span id="cb47-28"><a href="#cb47-28" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(<span class="sc">!!</span> <span class="fu">sym</span>(region_col) )) </span>
-<span id="cb47-29"><a href="#cb47-29" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>  dist<span class="sc">$</span>prop <span class="ot">&lt;-</span> dist<span class="sc">$</span>population<span class="sc">/</span><span class="fu">sum</span>(dist<span class="sc">$</span>population)</span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># handle label for plotted column</span></span>
+<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(col_label)){ col_label <span class="ot">&lt;-</span> plot_col }</span>
+<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(dist) <span class="sc">+</span></span>
+<span id="cb47-18"><a href="#cb47-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_col</span>(</span>
+<span id="cb47-19"><a href="#cb47-19" aria-hidden="true" tabindex="-1"></a>          <span class="fu">aes</span>(</span>
+<span id="cb47-20"><a href="#cb47-20" aria-hidden="true" tabindex="-1"></a>            <span class="at">x =</span> prop, <span class="at">y  =</span> <span class="fu">as.factor</span>(<span class="sc">!!</span> <span class="fu">sym</span>(plot_col))</span>
+<span id="cb47-21"><a href="#cb47-21" aria-hidden="true" tabindex="-1"></a>            ),</span>
+<span id="cb47-22"><a href="#cb47-22" aria-hidden="true" tabindex="-1"></a>          <span class="at">fill =</span> <span class="st">"cornflowerblue"</span></span>
+<span id="cb47-23"><a href="#cb47-23" aria-hidden="true" tabindex="-1"></a>          ) <span class="sc">+</span></span>
+<span id="cb47-24"><a href="#cb47-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>),</span>
+<span id="cb47-25"><a href="#cb47-25" aria-hidden="true" tabindex="-1"></a>          <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb47-26"><a href="#cb47-26" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(</span>
+<span id="cb47-27"><a href="#cb47-27" aria-hidden="true" tabindex="-1"></a>      <span class="at">title =</span> <span class="fu">str_interp</span>(<span class="st">"Distribution of ${col_label} in ${data_label} dataset"</span>),</span>
+<span id="cb47-28"><a href="#cb47-28" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">"proportion of population"</span>,</span>
+<span id="cb47-29"><a href="#cb47-29" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> col_label</span>
+<span id="cb47-30"><a href="#cb47-30" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb47-31"><a href="#cb47-31" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(<span class="sc">!!</span> <span class="fu">sym</span>(region_col) )) </span>
+<span id="cb47-32"><a href="#cb47-32" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="panel-tabset">
@@ -812,12 +818,12 @@ serial,vn2019a_pern,vn2019a_age,sex,qh,urban,pid,weight,relig,edlev,empstat,econ
 <div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_var_dist</span>(synthetic_population<span class="sc">@</span>pop<span class="sc">@</span>data, </span>
 <span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>      <span class="at">plot_col =</span> <span class="st">"edlev"</span>, <span class="at">col_label =</span> <span class="st">"education level"</span>, <span class="at">data_label =</span> <span class="st">"synthetic"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" style="width:100.0%"></p>
 </div>
 <div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_var_dist</span>(micro_data, <span class="at">pop_formula =</span> <span class="st">"sum(perwt)"</span>, </span>
 <span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">plot_col =</span> <span class="st">"edlev"</span>, <span class="at">col_label =</span> <span class="st">"education level"</span>, <span class="at">data_label =</span> <span class="st">"ipums"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-22-2.png" class="img-fluid" width="672"></p>
+<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-22-2.png" class="img-fluid" style="width:100.0%"></p>
 </div>
 </div>
 </div>
@@ -826,12 +832,12 @@ serial,vn2019a_pern,vn2019a_age,sex,qh,urban,pid,weight,relig,edlev,empstat,econ
 <div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_var_dist</span>(synthetic_population<span class="sc">@</span>pop<span class="sc">@</span>data, <span class="at">plot_col =</span> <span class="st">"urban"</span>,</span>
 <span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">col_label =</span> <span class="st">"urban-rural status"</span>, <span class="at">data_label =</span> <span class="st">"synthetic"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" style="width:100.0%"></p>
 </div>
 <div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_var_dist</span>(micro_data, <span class="at">pop_formula =</span> <span class="st">"sum(perwt)"</span>, <span class="at">plot_col =</span> <span class="st">"urban"</span>,</span>
 <span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">col_label =</span> <span class="st">"urban-rural status"</span>, <span class="at">data_label =</span> <span class="st">"ipums"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-23-2.png" class="img-fluid" width="672"></p>
+<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-23-2.png" class="img-fluid" style="width:100.0%"></p>
 </div>
 </div>
 </div>
@@ -840,12 +846,12 @@ serial,vn2019a_pern,vn2019a_age,sex,qh,urban,pid,weight,relig,edlev,empstat,econ
 <div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_var_dist</span>(synthetic_population<span class="sc">@</span>pop<span class="sc">@</span>data, <span class="at">plot_col =</span> <span class="st">"nchlt5"</span>,</span>
 <span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">col_label =</span> <span class="st">"no. of children per household"</span>, <span class="at">data_label =</span> <span class="st">"synthetic"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" style="width:100.0%"></p>
 </div>
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_var_dist</span>(micro_data, <span class="at">pop_formula =</span> <span class="st">"sum(perwt)"</span>, <span class="at">plot_col =</span> <span class="st">"nchlt5"</span>,</span>
 <span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">col_label =</span> <span class="st">"no. of children per household"</span>, <span class="at">data_label =</span> <span class="st">"ipums"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-24-2.png" class="img-fluid" width="672"></p>
+<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-24-2.png" class="img-fluid" style="width:100.0%"></p>
 </div>
 </div>
 </div>
@@ -854,12 +860,12 @@ serial,vn2019a_pern,vn2019a_age,sex,qh,urban,pid,weight,relig,edlev,empstat,econ
 <div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_var_dist</span>(synthetic_population<span class="sc">@</span>pop<span class="sc">@</span>data, <span class="at">plot_col =</span> <span class="st">"relig"</span>,</span>
 <span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">col_label =</span> <span class="st">"religion"</span>, <span class="at">data_label =</span> <span class="st">"synthetic"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" style="width:100.0%"></p>
 </div>
 <div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_var_dist</span>(micro_data, <span class="at">pop_formula =</span> <span class="st">"sum(perwt)"</span>, <span class="at">plot_col =</span> <span class="st">"relig"</span>,</span>
 <span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>            <span class="at">col_label =</span> <span class="st">"religion"</span>, <span class="at">data_label =</span> <span class="st">"ipums"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-25-2.png" class="img-fluid" width="672"></p>
+<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-25-2.png" class="img-fluid" style="width:100.0%"></p>
 </div>
 </div>
 </div>
@@ -868,12 +874,12 @@ serial,vn2019a_pern,vn2019a_age,sex,qh,urban,pid,weight,relig,edlev,empstat,econ
 <div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_var_dist</span>(synthetic_population<span class="sc">@</span>pop<span class="sc">@</span>data, <span class="at">plot_col =</span> <span class="st">"economic_status"</span>,</span>
 <span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">col_label =</span> <span class="st">"economic status"</span>, <span class="at">data_label =</span> <span class="st">"synthetic"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
+<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" style="width:100.0%"></p>
 </div>
 <div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_var_dist</span>(micro_data, <span class="at">pop_formula =</span> <span class="st">"sum(perwt)"</span>, <span class="at">plot_col =</span> <span class="st">"economic_status"</span>,</span>
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">col_label =</span> <span class="st">"economic status"</span>, <span class="at">data_label =</span> <span class="st">"ipums"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-26-2.png" class="img-fluid" width="672"></p>
+<p><img src="synthetic_hcm_files/figure-html/unnamed-chunk-26-2.png" class="img-fluid" style="width:100.0%"></p>
 </div>
 </div>
 </div>
